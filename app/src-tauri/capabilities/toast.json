@@ -1,0 +1,13 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "toast",
+  "description": "The toast window: listen for its payload, close itself when the fade-out is done. Nothing else.",
+  "windows": [
+    "toast"
+  ],
+  "permissions": [
+    "core:event:default",
+    "core:window:allow-hide",
+    "core:window:allow-close"
+  ]
+}

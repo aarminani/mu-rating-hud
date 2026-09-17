@@ -1,0 +1,32 @@
+[package]
+name = "murating-helper"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Mu Rating Helper"
+
+[[bin]]
+name = "trhmu"
+path = "src/main.rs"
+
+[lib]
+name = "murating_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[features]
+demo = []
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+murating-core = { path = "../crates/core" }
+tauri = { version = "2", features = ["tray-icon", "image-png"] }
+tauri-plugin-autostart = "2"
+tauri-plugin-opener = "2"
+serde.workspace = true
+serde_json.workspace = true
+crc32fast = "1.5"
+
+[target.'cfg(windows)'.dependencies]
+winreg = "0.55"

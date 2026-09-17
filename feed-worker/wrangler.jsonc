@@ -1,0 +1,21 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "murating-feed",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-09-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "triggers": {
+    "crons": ["* * * * *"]
+  },
+  "limits": {
+    "cpu_ms": 30000
+  },
+  "r2_buckets": [
+    { "binding": "FEED", "bucket_name": "murating-feed" }
+  ],
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  }
+}

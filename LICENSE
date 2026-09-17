@@ -1,0 +1,32 @@
+Mu Rating HUD - Source Available License
+
+Copyright (c) 2026 aarmani. All rights reserved.
+
+This repository is source available. It is published so the code can be read,
+reviewed and checked. It is not open source, and no open source license applies.
+
+You may:
+
+  - view and read the source code;
+  - download or clone it to review it, or to build it for your own personal,
+    non-commercial use.
+
+You may not, without prior written permission from the copyright holder:
+
+  - redistribute the source code, or any build made from it, in whole or in part;
+  - publish, distribute or offer modified versions or derivative works;
+  - use any part of the code, assets or designs in another project, commercial
+    or not;
+  - sell, sublicense or otherwise commercially exploit any part of it.
+
+Contributions: by submitting an issue, suggestion or pull request, you agree that
+the copyright holder may use it freely, under these terms or any others.
+
+The software is provided "as is", without warranty of any kind, express or
+implied. In no event shall the copyright holder be liable for any claim, damages
+or other liability arising from the software or its use.
+
+Tekken and Tekken 8 are trademarks of Bandai Namco Entertainment Inc. This project
+is not affiliated with or endorsed by Bandai Namco Entertainment or Wavu Wank.
+Third-party components keep their own licenses; see
+app/src-tauri/THIRD_PARTY_NOTICES.txt.

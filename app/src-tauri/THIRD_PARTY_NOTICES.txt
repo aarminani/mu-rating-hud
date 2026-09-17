@@ -1,0 +1,75 @@
+Mu Rating Helper - Third Party Notices
+======================================
+
+Mu Rating Helper reads a published rating snapshot and writes one small file
+into Tekken 8's SaveGames folder. It distributes no game content, no game
+assets, and no mods.
+
+
+DISCLAIMER
+----------
+Mu Rating Helper is not affiliated with, endorsed by, or sponsored by Bandai
+Namco Entertainment Inc. TEKKEN is a trademark of Bandai Namco Entertainment
+Inc. All game content and trademarks belong to their respective owners.
+
+It is also not affiliated with or endorsed by Wavu Wiki. Rating data originates
+from Wavu Wank (https://wank.wavu.wiki) and is reproduced with attribution.
+
+Use at your own risk. Modifying game files may cause instability or data loss,
+and mod use is at the discretion of the game's publisher.
+
+
+WHAT IT WRITES
+--------------
+Exactly one file, at:
+
+    %LOCALAPPDATA%\TEKKEN 8\Saved\SaveGames\MuRating.sav
+
+It never deletes a file, never enumerates the folder's contents, and refuses to
+overwrite any file of that name it did not write itself. Everything else in that
+directory belongs to the game and is left untouched.
+
+
+WHAT IT SENDS
+-------------
+Nothing about you. There is no account, no password and no telemetry. The only
+outbound request is a download of a static, public ratings snapshot.
+
+
+WAVU WANK
+---------
+Rating data is derived from Wavu Wank, a community project. Requests are made in
+line with its robots.txt: one request in flight at a time, a minimum ten second
+interval, and none of the paths its robots.txt disallows.
+
+To keep that load constant regardless of how many people use this app, the
+snapshot is fetched by a single maintainer machine on a slow schedule and
+published as a static file. Copies of this app download that file and never
+contact Wavu Wank directly.
+
+
+TAURI
+-----
+Built with Tauri, dual-licensed under Apache-2.0 or MIT at your option.
+
+    Copyright (c) 2017 - Present Tauri Apps Contributors
+
+Full text: https://github.com/tauri-apps/tauri/blob/dev/LICENSE_MIT
+
+
+RUST CRATES
+-----------
+This application links a number of Rust crates, the great majority under the MIT
+or Apache-2.0 licences. A complete machine-generated inventory for a given build
+can be produced with `cargo tree` or `cargo about`.
+
+
+JAVASCRIPT PACKAGES
+-------------------
+The interface is built with React (MIT), Motion (MIT), Tailwind CSS (MIT),
+Base UI (MIT) and Lucide (ISC).
+
+
+FONTS
+-----
+None are bundled. The interface uses Segoe UI, already present on Windows.
