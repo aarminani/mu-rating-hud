@@ -1,4 +1,5 @@
 import { jsonArray, readPrefix, selectRange, selectRated, type Prefix, type Selected } from "./scan";
+import { compare, withAudit, type Audit, type AuditRecord } from "./audit";
 import {
   pushRepair,
   repairFollowUps,
@@ -6,6 +7,7 @@ import {
   RECHECK_SECS,
   RETAINED_HOURS,
   SETTLE_SECS,
+  WINDOW_SECS,
   type Repair,
 } from "./repair";
 
@@ -17,6 +19,9 @@ const WAVU = "https://wank.wavu.wiki/api/replays";
 const USER_AGENT = "MuRatingFeed/0.2 (+https://tekkenresourcehub.com; Tekken 8 MR badge)";
 const KEEP_MINUTES = 120;
 const KEEP_HOURS = RETAINED_HOURS;
+const AUDIT_CRON = "17 4 * * *";
+const AUDIT_AGE_SECS = 4 * 3600;
+
 const COLD_START_SECS = 180;
 const PASS_BYTES = 8 * 1024 * 1024;
 const REACH_SECS = 3 * 3600;
@@ -60,6 +65,12 @@ export default {
   async scheduled(controller: ScheduledController, env: Env): Promise<void> {
     const minute = Math.floor(controller.scheduledTime / 60_000);
     const now = Math.floor(controller.scheduledTime / 1000);
+
+    if (controller.cron === AUDIT_CRON) {
+      await runAudit(env, now).catch((e) => console.log(`audit failed: ${e}`));
+      return;
+    }
+
     const latest = await readLatest(env);
     const next: Latest = latest ?? { v: 1, minute: 0, newest_at: now - COLD_START_SECS, newest_ids: [], minutes: [], hours: [] };
 
@@ -151,6 +162,48 @@ async function repairPass(env: Env, next: Latest, now: number): Promise<{ pieces
     );
   }
   return { pieces, log: notes.join("; ") };
+}
+
+async function runAudit(env: Env, now: number): Promise<void> {
+  const to = now - AUDIT_AGE_SECS;
+  const from = to - WINDOW_SECS + 1;
+
+  const res = await fetch(`${WAVU}?before=${to}`, {
+    headers: { "User-Agent": USER_AGENT, Accept: "application/json" },
+  });
+  if (!res.ok) {
+    console.log(`audit: wavu ${res.status}`);
+    await res.body?.cancel();
+    return;
+  }
+  const wavu = (await res.json()) as AuditRecord[];
+
+  const first = Math.floor(from / 3600);
+  const feed: AuditRecord[] = [];
+  const read: number[] = [];
+  for (let h = first; h <= first + 2; h++) {
+    const obj = await env.FEED.get(`feed/hour/${h}.json`);
+    if (!obj) continue;
+    feed.push(...((await obj.json()) as AuditRecord[]));
+    read.push(h);
+  }
+  if (read.length === 0) {
+    console.log(`audit: no hour file for ${first}, nothing to compare`);
+    return;
+  }
+
+  const result = compare(wavu, feed, from, to, now);
+  const previous = await env.FEED.get("feed/audit.json");
+  const history = previous ? ((await previous.json()) as Audit[]) : [];
+  await env.FEED.put("feed/audit.json", JSON.stringify(withAudit(Array.isArray(history) ? history : [], result)), {
+    httpMetadata: { contentType: "application/json", cacheControl: "public, max-age=300" },
+  });
+
+  console.log(
+    `audit ${from}-${to} over hours ${read.join(",")}: wavu ${result.wavu} GoD+, feed ${result.found}, ` +
+      `MISSING ${result.missing}, blank ${result.blank}, duplicates ${result.duplicates}` +
+      `${result.examples.length ? `, e.g. ${result.examples.join(" ")}` : ""}`,
+  );
 }
 
 function rollUpDue(next: Latest, minute: number): boolean {
