@@ -15,6 +15,7 @@ crate-type = ["staticlib", "cdylib", "rlib"]
 
 [features]
 demo = []
+dash = []
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }

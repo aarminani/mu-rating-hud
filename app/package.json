@@ -11,6 +11,7 @@
     "app:dev": "tauri dev",
     "app:build": "tauri build --no-bundle",
     "app:build:preview": "tauri build --no-bundle --features demo --config src-tauri/tauri.preview.conf.json",
+    "app:build:dash": "tauri build --no-bundle --features dash",
     "app:bundle": "tauri build",
     "test": "cargo test -p murating-core"
   },

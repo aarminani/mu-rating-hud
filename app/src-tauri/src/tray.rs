@@ -408,23 +408,28 @@ fn menu(app: &AppHandle) -> tauri::Result<Menu<tauri::Wry>> {
     let change = MenuItem::with_id(app, "change", "Change Account", true, None::<&str>)?;
     let quit = MenuItem::with_id(app, "quit", "Exit", true, None::<&str>)?;
 
-    Menu::with_items(
-        app,
-        &[
-            &name_item,
-            &id_item,
-            &PredefinedMenuItem::separator(app)?,
-            &mr,
-            &autoconnect,
-            &autohide,
-            &autostart,
-            &notifications,
-            &PredefinedMenuItem::separator(app)?,
-            &ratings,
-            &change,
-            &quit,
-        ],
-    )
+    #[cfg(feature = "dash")]
+    let health = MenuItem::with_id(app, "dash", "Service Health", true, None::<&str>)?;
+
+    let sep_top = PredefinedMenuItem::separator(app)?;
+    let sep_bottom = PredefinedMenuItem::separator(app)?;
+    let mut items: Vec<&dyn tauri::menu::IsMenuItem<_>> = vec![
+        &name_item,
+        &id_item,
+        &sep_top,
+        &mr,
+        &autoconnect,
+        &autohide,
+        &autostart,
+        &notifications,
+        &sep_bottom,
+        &ratings,
+        &change,
+    ];
+    #[cfg(feature = "dash")]
+    items.push(&health);
+    items.push(&quit);
+    Menu::with_items(app, &items)
 }
 
 fn rebuild(app: &AppHandle) -> tauri::Result<()> {
@@ -438,6 +443,13 @@ fn on_menu(app: &AppHandle, id: &str) {
     match id {
         "ratings" => crate::window::open_main(app, Some("app:show-ratings")),
         "change" => crate::window::open_main(app, Some("app:change-account")),
+        #[cfg(feature = "dash")]
+        "dash" => {
+            if let Some(url) = crate::dash::url() {
+                use tauri_plugin_opener::OpenerExt;
+                let _ = app.opener().open_url(url, None::<&str>);
+            }
+        }
         "mr" => set_setting(app, "mr", !mr_enabled(app)),
         "autohide" => set_setting(app, "autohide", !auto_hide(app)),
         "autostart" => {

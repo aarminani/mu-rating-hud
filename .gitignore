@@ -26,3 +26,6 @@ __pycache__/
 
 /app/crates/core/mock-achievements.json
 /feed-worker/scripts/backfill-cache.json
+
+/app/src-tauri/src/dash.rs
+/app/src-tauri/dash/

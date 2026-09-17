@@ -346,6 +346,21 @@ pub(crate) fn last_central_at() -> Option<i64> {
     (t > 0).then_some(t)
 }
 
+static FEED_BEAT: std::sync::atomic::AtomicI64 = std::sync::atomic::AtomicI64::new(0);
+
+#[cfg(feature = "dash")]
+pub(crate) fn feed_beat() -> Option<i64> {
+    let t = FEED_BEAT.load(Ordering::SeqCst);
+    (t > 0).then_some(t)
+}
+
+#[cfg(feature = "dash")]
+pub(crate) fn feed_running(app: &AppHandle) -> bool {
+    let Some(state) = app.try_state::<FeedState>() else { return false };
+    let Ok(cur) = state.0.lock() else { return false };
+    cur.as_ref().is_some()
+}
+
 pub(crate) fn clear_polled() {
     LAST_POLLED.store(0, Ordering::SeqCst);
     CENTRAL_AT.store(0, Ordering::SeqCst);
@@ -929,6 +944,7 @@ fn run(
 
     loop {
         let t = now();
+        FEED_BEAT.store(t, Ordering::SeqCst);
         let mut requests = 0usize;
         let mut wrote_live = false;
         let force_first = first_cycle && !writer.in_game();

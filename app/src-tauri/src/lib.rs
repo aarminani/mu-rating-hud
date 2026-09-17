@@ -7,6 +7,8 @@ mod achievements;
 mod commands;
 #[cfg(feature = "demo")]
 mod demo;
+#[cfg(feature = "dash")]
+mod dash;
 mod diag;
 mod feed;
 mod follow;
@@ -41,6 +43,8 @@ pub fn run() {
             achievements::init(app.handle());
             roster::init(app.handle());
             tray::init(app.handle())?;
+            #[cfg(feature = "dash")]
+            dash::start(app.handle());
             #[cfg(not(feature = "demo"))]
             tray::refresh_autostart_path(app.handle());
             #[cfg(not(feature = "demo"))]
