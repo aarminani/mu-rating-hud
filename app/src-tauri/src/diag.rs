@@ -107,7 +107,7 @@ fn net(e: Endpoint) -> NetStat {
     NET.lock().map(|n| n[e as usize].clone()).unwrap_or(NetStat::EMPTY)
 }
 
-fn civil(t: i64) -> (i64, i64, i64, i64) {
+pub(crate) fn civil(t: i64) -> (i64, i64, i64, i64) {
     let days = t.div_euclid(86_400);
     let z = days + 719_468;
     let era = z.div_euclid(146_097);
