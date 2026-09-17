@@ -1,4 +1,4 @@
-# Tekken Resource Hub Mu Rating HUD
+# Tekken Resource Hub Mu Rating HUD (True Prowess)
 
 In Tekken 8, the ranked system has been a major point of contention for some time now, especially
 when Street Fighter, one of our biggest competitors in the space has a very practical system that
@@ -59,13 +59,13 @@ can see the mod.
 
 ## 💬 If You Have Any Problems
 
-Join my Discord, find the **Mu support thread**, and file a ticket there:
+Join my Discord, find the **mu-support thread**, and file a ticket there:
 
 https://discord.com/invite/DmPqYPtgKg
 
 Attach your diagnostics: **Settings → Troubleshooting → Diagnostics** copies a report of the app,
 game, mods, connection, MR and recent log. Pasting that with your ticket is the difference between
-a guess and a fix.
+a guess and a fix, please make sure to include that!
 
 ## ☕ Support The Project
 
