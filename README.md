@@ -155,7 +155,7 @@ battle in Tekken 8 and publishes the result for free. Thank you.
 
 ## Feed & Achievements
 
-### The feed
+### The Feed
 
 A record of what happened, newest first, under day headings, kept per account and five hundred rows
 deep.
