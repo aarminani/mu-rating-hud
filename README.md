@@ -176,14 +176,14 @@ Seventy-five of them, in six sections: **Milestones** (10), **Match** (14), **St
 Milestones are numbers you pass, a peak, a hundred, a games count, and are earned once. The rest
 are things you did, and most can be earned again in a later session.
 
-Each one is **Common**, **Uncommon**, **Rare**, **Epic** or **Legendary**, and the rarity is the
-colour it is drawn in everywhere: the card, the feed row, the tile and the unread dot. A tiered
+Each one is **Common**, **Uncommon**, **Rare**, **Epic** or **Legendary**, and the rarity has
+universal coloring across the app: the card, the feed row, the tile and the unread dot. A tiered
 achievement carries the rarity of the step you reached, so the same entry gets rarer as you climb
 it.
 
 Where several would fire at once, only the biggest does. Beating someone 800 MR above you is an
 upset, a giant slaying and a dragon slaying at the same time; Dragon Slayer is what you get, and
-the smaller ones are quietly marked as reached.
+the smaller ones are quietly marked as reached!
 
 ### Notifications
 
