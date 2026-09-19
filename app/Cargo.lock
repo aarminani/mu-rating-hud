@@ -2169,7 +2169,7 @@ dependencies = [
 
 [[package]]
 name = "murating-core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "caseless",
  "serde",
@@ -2182,7 +2182,7 @@ dependencies = [
 
 [[package]]
 name = "murating-helper"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "crc32fast",
  "murating-core",

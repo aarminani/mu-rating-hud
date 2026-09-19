@@ -31,7 +31,7 @@ as you play, and it is what decides which group a character sits in.
 
 Two pieces: the mod that draws the badge, and the helper that feeds it. You need both. Grab them
 from [Releases](https://github.com/aarminani/mu-rating-hud/releases), or from
-[`download/`](download): `trhmu-0.1.0.zip` is the helper, `TrueProwessMuRating-0.1.0.zip` is the mod.
+[`download/`](download): `trhmu-0.1.1.zip` is the helper, `TrueProwessMuRating-0.1.0.zip` is the mod.
 
 **1. The mod.** Copy all three files into `...\TEKKEN 8\Polaris\Content\Paks\Mods\MuRating\`,
 making those folders if they aren't there:
@@ -84,7 +84,7 @@ in game badge, the change after each fight, and your opponents' ratings in the r
 It's two critical things. A badge that draws in game, and a small Windows helper that keeps the badge fed,
 so the number beside your rank is the one Wavu has rather than one you have to go and look up.
 
-**Status:** beta. Version 0.1.0. What changed, release by release, is in [CHANGELOG.md](CHANGELOG.md).
+**Status:** beta. Version 0.1.1. What changed, release by release, is in [CHANGELOG.md](CHANGELOG.md).
 
 This repository is **source available, not open source**. You're welcome to read and review the
 code, but you may not redistribute it or reuse it elsewhere. See [LICENSE](LICENSE).

@@ -3,6 +3,19 @@
 The same notes ship inside the helper, under Settings, so they always describe the version actually
 running.
 
+## Version 0.1.1 - September 19th, 2026
+
+Fixes for the helper getting in front of the game.
+
+### Fixed
+
+- Notifications could take focus away from Tekken. A card that arrived just as the last one was
+  closing was brought back in a way Windows treats as switching to it, so in Borderless or Windowed
+  the game lost your inputs for a moment. Notification cards now cannot take focus at all.
+- The helper could open itself over a match. It opens when Tekken starts, and one failed check on
+  whether Tekken was running, followed by a good one, looked like Tekken restarting. It now needs
+  Tekken to be really gone first, and never counts the same game as a new launch.
+
 ## Version 0.1.0 - September 17th, 2026
 
 First release.

@@ -61,6 +61,20 @@ const CHANGELOG: {
   sections: { title: string; notes: string[] }[];
 }[] = [
   {
+    version: "0.1.1",
+    date: "September 19th, 2026",
+    lead: "Fixes for the helper getting in front of the game.",
+    sections: [
+      {
+        title: "Fixed",
+        notes: [
+          "Notifications could take focus away from Tekken. A card that arrived just as the last one was closing was brought back in a way Windows treats as switching to it, so in Borderless or Windowed the game lost your inputs for a moment. Notification cards now cannot take focus at all.",
+          "The helper could open itself over a match. It opens when Tekken starts, and one failed check on whether Tekken was running, followed by a good one, looked like Tekken restarting. It now needs Tekken to be really gone first, and never counts the same game as a new launch.",
+        ],
+      },
+    ],
+  },
+  {
     version: "0.1.0",
     date: "September 17th, 2026",
     lead: "First release.",

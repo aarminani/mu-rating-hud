@@ -1336,7 +1336,7 @@ mod tests {
             sent_at: now,
             utc_offset_min: off,
             install_id: "3f9c2a71d04be816".into(),
-            app_version: "0.1.0".into(),
+            app_version: "0.1.1".into(),
             warnings: Vec::new(),
             helper: HelperInfo {
                 started_at: now - 2 * 3_600 - 13 * 60,

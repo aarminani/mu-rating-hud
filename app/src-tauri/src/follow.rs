@@ -161,7 +161,7 @@ pub fn start(app: &AppHandle) {
 
 struct Loop {
     last_steam: Option<String>,
-    game: bool,
+    game: process::GameSeen,
     game_at: Option<Instant>,
     unpaired_for: Option<Option<String>>,
     failures: usize,
@@ -173,7 +173,7 @@ struct Loop {
 fn run(app: AppHandle) {
     let mut l = Loop {
         last_steam: steam::active_steam_id(),
-        game: false,
+        game: process::GameSeen::default(),
         game_at: None,
         unpaired_for: None,
         failures: 0,
@@ -222,10 +222,9 @@ fn tick(app: &AppHandle, l: &mut Loop) {
     }
     let interval = if following.is_some() { GAME_POLL_FOLLOWING } else { GAME_POLL_WAITING };
     if force || steam_changed || l.game_at.map_or(true, |t| t.elapsed() >= interval) {
-        let was = l.game;
-        l.game = process::game_running();
+        let launched = l.game.observe(process::game_check());
         l.game_at = Some(Instant::now());
-        if l.game && !was {
+        if launched {
             l.failures = 0;
             l.retry_at = None;
             if !tray::headless(app) && app.get_webview_window("main").is_none() {
@@ -247,7 +246,7 @@ fn tick(app: &AppHandle, l: &mut Loop) {
         l.open_pending = false;
     }
     let open = l.open_pending && !saved.is_empty();
-    let signed_in = if open && !force && !l.game && !paired.iter().any(|a| a.steam_id.is_some() && a.steam_id == steam_now) {
+    let signed_in = if open && !force && !l.game.running && !paired.iter().any(|a| a.steam_id.is_some() && a.steam_id == steam_now) {
         None
     } else {
         steam_now.clone()
@@ -256,7 +255,7 @@ fn tick(app: &AppHandle, l: &mut Loop) {
     let last = accounts::last_followed(&saved);
     let want = rules::want(&Inputs {
         accounts: &paired,
-        game_running: l.game || force || open,
+        game_running: l.game.running || force || open,
         signed_in: signed_in.as_deref(),
         following: following.as_deref(),
         pinned: pinned.as_deref(),
