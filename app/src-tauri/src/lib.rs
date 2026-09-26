@@ -18,6 +18,7 @@ mod roster;
 mod single;
 mod toast;
 mod tray;
+mod update;
 mod window;
 
 pub fn run() {
@@ -51,6 +52,8 @@ pub fn run() {
             follow::start(app.handle());
             #[cfg(feature = "demo")]
             demo::start(app.handle());
+            #[cfg(not(feature = "demo"))]
+            update::start(app.handle());
             if !launch::is_autostart() {
                 tray::show_main(app.handle());
             }
@@ -92,6 +95,8 @@ pub fn run() {
             commands::set_utc_offset,
             window::set_window_mode,
             window::main_window_ready,
+            update::update_available,
+            update::update_dismissed,
             toast::toast_ready,
             roster::roster_status,
         ])

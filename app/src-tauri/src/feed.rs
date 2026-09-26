@@ -780,6 +780,9 @@ impl Writer {
         if self.last == Some(digest) {
             return;
         }
+        if stop.load(Ordering::SeqCst) {
+            return;
+        }
         let build_ms = build_start.elapsed().as_millis();
         let write_start = std::time::Instant::now();
         match slot::write_slot(&paths::slot_dir(), &bytes) {

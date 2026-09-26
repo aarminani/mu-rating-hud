@@ -17,6 +17,7 @@ import { SettingsPane } from "./components/SettingsPane";
 import { LastBattle, LogoPager, PagerMark, type PagerPage } from "./components/LogoPager";
 import { portraitFor } from "./lib/portraits";
 import { Achievements as AchievementsView } from "./components/Achievements";
+import { UpdateModal } from "./components/UpdateModal";
 import { StarIcon } from "./components/Icons";
 import { rarityVar } from "./lib/rarity";
 import type {
@@ -618,6 +619,7 @@ export default function App() {
           )}
         </div>
       </div>
+      <UpdateModal />
     </SizeProvider>
   );
 }

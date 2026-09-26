@@ -779,6 +779,8 @@ fn battle(ctx: &mut Ctx, p: &mut Progress, s: &mut SessionState, m: &OwnMatch, i
             if scoped_first(p, "A08", &scope) {
                 ctx.fire(p, "A08", at, format!("First win with {mine} against {theirs}"), Some(theirs), 0);
             }
+        }
+        if let Some(mine) = m.character.clone() {
             let key = char_key(&mine);
             let beaten = p.beaten.get(&key).map(BTreeSet::len).unwrap_or(0);
             if beaten >= T::WELL_ROUNDED && scoped_first(p, "A27", &key) {
@@ -1380,6 +1382,35 @@ mod tests {
             1,
             "filled in, not added again"
         );
+    }
+
+    #[test]
+    fn a_roster_completed_out_of_session_still_earns_on_the_next_win() {
+        let opp = |n: i32| {
+            let mut x = m(100 + i64::from(n), true, 10, 2000, "rival");
+            x.battle_id = Some(format!("old{n}"));
+            x.opponent_chara_id = Some(n);
+            x.opponent_character = Some(format!("C{n}"));
+            x
+        };
+        let ratings = [rating("Anna", 2100, 600)];
+
+        let history: Vec<OwnMatch> = (1..=42).map(opp).collect();
+        let mut p = Progress::default();
+        let mut s = SessionState::new(5_000);
+        let first = update(&mut p, &mut s, &inputs(&history, &ratings, 5_000));
+        assert!(first.entries.is_empty(), "the first pass earns nothing, by design");
+        assert_eq!(p.beaten.get("anna").map(BTreeSet::len), Some(42), "but the set is full");
+        assert!(!p.earned.contains_key("A28"), "and nothing was earned out of session");
+
+        let mut later = opp(7);
+        later.battle_at = 9_000;
+        later.battle_id = Some("later".into());
+        let mut s2 = SessionState::new(8_000);
+        let out = update(&mut p, &mut s2, &inputs(&[later], &ratings, 8_000));
+
+        assert!(p.earned.contains_key("A28"), "Full Roster is earned on the next in-session win");
+        assert!(out.entries.iter().any(|e| e.id == "A28"), "and the player is told");
     }
 }
 

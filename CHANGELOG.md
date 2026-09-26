@@ -3,6 +3,33 @@
 The same notes ship inside the helper, under Settings, so they always describe the version actually
 running.
 
+## Version 1.0.0 - September 25th, 2026
+
+The first full release. Everything below is a fix or an addition on top of the beta.
+
+### Added
+
+- The helper checks GitHub for a new version when it opens, and offers it. Nothing installs on its
+  own: the card asks, and if it is left alone it closes itself and asks again next time.
+
+### Fixed
+
+- Two notifications arriving close together could leave the second one invisible. The first card's
+  exit hid the window the second was already drawn in, so an award was earned, announced to nobody,
+  and never shown again.
+- Full Roster and Well Rounded could become permanently unearnable. Both were only checked when you
+  beat a character for the first time, but the set of characters you have beaten also fills in from
+  matches played while the helper was closed - so a set completed offline could never be completed
+  again, and the directory showed 42 / 42 with the award unearned.
+- Headless Mode quietly turned on Auto-connect for good. Headless forces auto-connect while it is
+  on, and that forced value was being saved as your preference, so turning Headless off left the
+  helper connecting on its own.
+- The badge's save slot could be written by two parts of the helper at once - the feed, an account
+  switch and a connect all write it - which could leave a corrupted file and a badge showing
+  nothing until the next write.
+- A single unrated battle below God of Destruction could hold up the shared ratings feed for every
+  player by up to fifteen minutes, even though a battle below that rank is never published.
+
 ## Version 0.1.1 - September 19th, 2026
 
 Fixes for the helper getting in front of the game.

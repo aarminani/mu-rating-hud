@@ -13,6 +13,7 @@ import { RatingsList } from "./components/RatingsList";
 import { LogoPager, PagerMark, type PagerPage } from "./components/LogoPager";
 import { portraitFor } from "./lib/portraits";
 import { SettingsPane } from "./components/SettingsPane";
+import { UpdateCard } from "./components/UpdateModal";
 import type { AccountRow, Achievements, CharRating, SessionSummary, SettingKey, Settings } from "./lib/types";
 import "./styles.css";
 import "./theme.css";
@@ -249,6 +250,34 @@ function SettingsMock() {
   );
 }
 
+function UpdateMock() {
+  const [left, setLeft] = useState<number | null>(null);
+  return (
+    <SizeProvider size="compact">
+      <div className="app" style={{ height: 520 }}>
+        <div style={{ padding: 16 }}>
+          <Button variant="tertiary" onClick={() => setLeft((n) => (n === null ? 10 : null))}>
+            {left === null ? "Start the countdown" : "Back to waiting"}
+          </Button>
+        </div>
+      </div>
+      <UpdateCard
+        found={{
+          version: "v1.0.1",
+          running: "1.0.0",
+          page: "https://github.com/aarminani/mu-rating-hud/releases/tag/v1.0.1",
+          asset: "https://example.invalid/trhmu-1.0.1.zip",
+          size: 5_517_041,
+        }}
+        left={left}
+        onStay={() => {}}
+        onLater={() => setLeft(null)}
+        onDownload={() => setLeft(null)}
+      />
+    </SizeProvider>
+  );
+}
+
 const params = new URLSearchParams(location.search);
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -260,6 +289,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <RatingsMock />
     ) : params.has("settings") ? (
       <SettingsMock />
+    ) : params.has("update") ? (
+      <UpdateMock />
     ) : (
       <Mock />
     )}

@@ -31,7 +31,7 @@ fn main() -> ExitCode {
         match paths::active_account(&root) {
             Ok(d) => {
                 let w = format!(
-                    "account {} — DIAGNOSTIC, the game does not read here",
+                    "account {} - DIAGNOSTIC, the game does not read here",
                     paths::account_id(&d)
                 );
                 (d, w)

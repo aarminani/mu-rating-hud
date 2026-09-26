@@ -262,7 +262,7 @@ export function selectRated(body: Uint8Array, from: number, forceBefore: number)
     const t = recordTime(body, at);
     const { rated, god } = judge(at, end);
     judged++;
-    if (!rated && t >= forceBefore && (heldFrom === 0 || t < heldFrom)) heldFrom = t;
+    if (!rated && god && t >= forceBefore && (heldFrom === 0 || t < heldFrom)) heldFrom = t;
     starts.push(at);
     times.push(t);
     flags.push((rated ? 1 : 0) | (god ? 2 : 0));

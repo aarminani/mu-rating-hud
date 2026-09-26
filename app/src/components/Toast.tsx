@@ -30,6 +30,8 @@ const collect = () => (built ??= invoke<ToastPayload | null>("toast_ready"));
 
 export function Toast() {
   const [payload, setPayload] = useState<ToastPayload | null>(null);
+  const payloadRef = useRef(payload);
+  payloadRef.current = payload;
   const timer = useRef<number | null>(null);
   const closer = useRef<number | null>(null);
   const reduced = useReducedMotion();
@@ -73,6 +75,7 @@ export function Toast() {
   return (
     <AnimatePresence
       onExitComplete={() => {
+        if (payloadRef.current) return;
         getCurrentWindow().hide().catch(() => {});
         closeSoon();
       }}

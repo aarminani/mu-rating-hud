@@ -17,6 +17,7 @@ pub mod session;
 pub mod slot;
 pub mod steam;
 pub mod table;
+pub mod update;
 pub mod utoc;
 pub mod vdf;
 

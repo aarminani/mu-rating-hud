@@ -92,7 +92,11 @@ pub fn replay_bytes(payload: &str, mr: &[(String, String)], delta: &[(String, i3
     out
 }
 
+static WRITING: std::sync::Mutex<()> = std::sync::Mutex::new(());
+
 pub fn write_slot(dir: &Path, blob: &[u8]) -> Result<PathBuf, SlotError> {
+    let _guard = WRITING.lock().unwrap_or_else(|e| e.into_inner());
+
     if !ALLOWED.contains(&SLOT_FILE) {
         return Err(SlotError::NotAllowed(SLOT_FILE.to_string()));
     }

@@ -137,7 +137,7 @@ fn save_flags(app: &AppHandle) {
         &[
             ("auto_hide", s.auto_hide.into()),
             ("hide_notifications", s.hide_notifications.into()),
-            ("auto_connect", s.auto_connect.into()),
+            ("auto_connect", session_flag(app, |s| s.auto_connect, true).into()),
             ("fighter_select", s.fighter_select.into()),
             ("pager_auto_scroll", s.pager_auto_scroll.into()),
             ("over_game", s.over_game.into()),

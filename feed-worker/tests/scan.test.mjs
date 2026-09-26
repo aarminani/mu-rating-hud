@@ -150,3 +150,38 @@ test("an empty body is handled everywhere rather than thrown on", async () => {
   assert.equal(selectRange(empty, 0, 9e9).kept, 0);
   assert.equal(new TextDecoder().decode(jsonArray([])), "[]");
 });
+
+async function bodyWithUnrated(pick) {
+  const doctored = truth.map((r) =>
+    r.battle_id === pick.battle_id ? { ...r, p1_rating_before: null, p1_rating_change: null } : r,
+  );
+  const raw = new TextEncoder().encode(JSON.stringify(doctored));
+  return (await readPrefix(new Response(raw).body, 0, 8 * 1024 * 1024, 64 * 1024)).body;
+}
+
+const BAND_START = Math.min(...truth.filter((r) => !rated(r)).map((r) => r.battle_at));
+const SETTLED = truth.filter((r) => rated(r) && r.battle_at < BAND_START).sort((a, b) => a.battle_at - b.battle_at);
+
+test("a late-listed unrated record below God of Destruction does not hold the feed", async () => {
+  const pick = SETTLED.find((r) => !god(r));
+  assert.ok(pick, "the fixture has a settled sub-GoD record to blank");
+  const newerGod = SETTLED.filter((r) => god(r) && r.battle_at > pick.battle_at);
+  assert.ok(newerGod.length, "and GoD+ records newer than it, which are what must still publish");
+
+  const s = selectRated(await bodyWithUnrated(pick), 0, 0);
+  assert.equal(s.heldFrom, BAND_START, "the hold line stays at the band, not at the sub-GoD record");
+  const got = JSON.parse(new TextDecoder().decode(jsonArray(s.pieces))).map((r) => r.battle_id);
+  for (const r of newerGod) assert.ok(got.includes(r.battle_id), `${r.battle_id} is still published`);
+});
+
+test("a late-listed unrated God of Destruction record still holds everything newer", async () => {
+  const godSettled = SETTLED.filter(god);
+  const pick = godSettled[Math.floor(godSettled.length / 2)];
+  assert.ok(pick, "the fixture has a settled GoD+ record to blank");
+
+  const s = selectRated(await bodyWithUnrated(pick), 0, 0);
+  assert.equal(s.heldFrom, pick.battle_at, "an unrated GoD+ battle is still the hold line");
+  const got = JSON.parse(new TextDecoder().decode(jsonArray(s.pieces)));
+  assert.ok(got.every((r) => r.battle_at < pick.battle_at), "nothing at or after it is published");
+  assert.ok(got.length, "and the records below it still go out");
+});
