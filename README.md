@@ -31,7 +31,7 @@ as you play, and it is what decides which group a character sits in.
 
 Two pieces: the mod that draws the badge, and the helper that feeds it. You need both. Grab them
 from [Releases](https://github.com/aarminani/mu-rating-hud/releases), or from
-[`download/`](download): `trhmu-1.0.1.zip` is the helper, `TrueProwessMuRating-1.0.0.zip` is the mod.
+[`download/`](download): `trhmu-1.0.1.zip` is the helper, `TrueProwessMuRating-1.0.1.zip` is the mod.
 
 **1. The mod.** Copy all three files into `...\TEKKEN 8\Polaris\Content\Paks\Mods\MuRating\`,
 making those folders if they aren't there:
