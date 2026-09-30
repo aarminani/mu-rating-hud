@@ -61,6 +61,19 @@ const CHANGELOG: {
   sections: { title: string; notes: string[] }[];
 }[] = [
   {
+    version: "1.0.1",
+    date: "September 30th, 2026",
+    lead: "One crash fix, for players who run Tekken in exclusive fullscreen.",
+    sections: [
+      {
+        title: "Fixed",
+        notes: [
+          "The helper could crash the game. Earning an achievement while Tekken was in exclusive fullscreen put a notification card on top of it, and a window appearing over an exclusive fullscreen game can force it to rebuild its display, which some setups do not survive. Cards were never visible in exclusive fullscreen anyway, so they are no longer shown there at all. The award is still earned, still announced in the feed, and still counted. Borderless and Windowed are unchanged.",
+        ],
+      },
+    ],
+  },
+  {
     version: "1.0.0",
     date: "September 25th, 2026",
     lead: "The first full release. Everything below is a fix or an addition on top of the beta.",

@@ -3,6 +3,18 @@
 The same notes ship inside the helper, under Settings, so they always describe the version actually
 running.
 
+## Version 1.0.1 - September 30th, 2026
+
+One crash fix, for players who run Tekken in exclusive fullscreen.
+
+### Fixed
+
+- The helper could crash the game. Earning an achievement while Tekken was in exclusive fullscreen
+  put a notification card on top of it, and a window appearing over an exclusive fullscreen game can
+  force it to rebuild its display, which some setups do not survive. Cards were never visible in
+  exclusive fullscreen anyway, so they are no longer shown there at all. The award is still earned,
+  still announced in the feed, and still counted. Borderless and Windowed are unchanged.
+
 ## Version 1.0.0 - September 25th, 2026
 
 The first full release. Everything below is a fix or an addition on top of the beta.

@@ -74,6 +74,10 @@ fn show_card(
     if crate::tray::notifications_hidden(app) || crate::tray::headless(app) {
         return;
     }
+    if suppressed(game_mode().as_deref(), crate::process::game_has_focus()) {
+        crate::diag!("[toast] exclusive fullscreen: card not shown");
+        return;
+    }
     deliver(app, Payload {
         seq: SEQ.fetch_add(1, Ordering::Relaxed),
         text: text.to_string(),
@@ -83,6 +87,25 @@ fn show_card(
         title,
     });
 }
+
+fn suppressed(mode: Option<&str>, game_focused: bool) -> bool {
+    mode == Some("fullscreen") && game_focused
+}
+
+fn game_mode() -> Option<String> {
+    static CACHE: Mutex<Option<(std::time::Instant, Option<String>)>> = Mutex::new(None);
+    let mut c = CACHE.lock().ok()?;
+    if let Some((at, mode)) = c.as_ref() {
+        if at.elapsed() < MODE_TTL {
+            return mode.clone();
+        }
+    }
+    let mode = murating_core::game::display_mode().map(|d| d.mode);
+    *c = Some((std::time::Instant::now(), mode.clone()));
+    mode
+}
+
+const MODE_TTL: std::time::Duration = std::time::Duration::from_secs(10);
 
 fn deliver(app: &AppHandle, payload: Payload) {
     if let Some(win) = app.get_webview_window("toast") {
@@ -242,5 +265,16 @@ mod tests {
             seen.sort_unstable();
             assert_eq!(seen, vec![1, 2, 3, 4, 5], "five presses from press {start}");
         }
+    }
+
+    #[test]
+    fn only_exclusive_fullscreen_with_the_game_in_front_is_suppressed() {
+        assert!(suppressed(Some("fullscreen"), true));
+
+        assert!(!suppressed(Some("borderless"), true), "borderless is what Over the Game is for");
+        assert!(!suppressed(Some("windowed"), true));
+        assert!(!suppressed(Some("fullscreen"), false), "alt-tabbed: the game does not own the screen");
+        assert!(!suppressed(None, true), "settings unreadable: do not silence awards on a guess");
+        assert!(!suppressed(Some("unknown (3)"), true), "a mode we do not know is not fullscreen");
     }
 }
