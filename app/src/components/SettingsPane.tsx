@@ -61,6 +61,21 @@ const CHANGELOG: {
   sections: { title: string; notes: string[] }[];
 }[] = [
   {
+    version: "1.0.2",
+    date: "October 5th, 2026",
+    lead: "Updating actually updates now.",
+    sections: [
+      {
+        title: "Changed",
+        notes: [
+          "The update card installs the new version itself. Press Update and it downloads, swaps itself and restarts, which takes a few seconds. Your accounts, settings and achievements are kept. In 1.0.0 and 1.0.1 the button only opened the download page and left you to replace the file by hand, which was not what it looked like it did.",
+          "If anything stops the install, the card says what went wrong and offers the download page, so there is always a way through.",
+          "Updates from 1.0.1 and earlier still have to be done by hand, because the in-app installer has to be in the version you are updating FROM. This is the last manual one.",
+        ],
+      },
+    ],
+  },
+  {
     version: "1.0.1",
     date: "September 30th, 2026",
     lead: "One crash fix, for players who run Tekken in exclusive fullscreen.",

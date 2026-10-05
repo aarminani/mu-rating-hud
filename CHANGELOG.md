@@ -3,6 +3,21 @@
 The same notes ship inside the helper, under Settings, so they always describe the version actually
 running.
 
+## Version 1.0.2 - October 5th, 2026
+
+Updating actually updates now.
+
+### Changed
+
+- The update card installs the new version itself. Press Update and it downloads, swaps itself and
+  restarts, which takes a few seconds. Your accounts, settings and achievements are kept. In 1.0.0
+  and 1.0.1 the button only opened the download page and left you to replace the file by hand,
+  which was not what it looked like it did.
+- If anything stops the install, the card says what went wrong and offers the download page, so
+  there is always a way through.
+- Updates from 1.0.1 and earlier still have to be done by hand, because the in-app installer has to
+  be in the version you are updating FROM. This is the last manual one.
+
 ## Version 1.0.1 - September 30th, 2026
 
 One crash fix, for players who run Tekken in exclusive fullscreen.

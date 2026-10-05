@@ -39,6 +39,8 @@ pub fn run() {
         ))
         .setup(|app| {
             diag::init(app.handle());
+            #[cfg(not(feature = "demo"))]
+            update::clean_old();
             single::serve(app.handle());
             feed::init(app.handle());
             achievements::init(app.handle());
@@ -97,6 +99,7 @@ pub fn run() {
             window::main_window_ready,
             update::update_available,
             update::update_dismissed,
+            update::update_install,
             toast::toast_ready,
             roster::roster_status,
         ])

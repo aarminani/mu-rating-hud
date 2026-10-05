@@ -1,3 +1,5 @@
+use std::io::Read;
+use std::path::Path;
 use std::time::Duration;
 
 use serde::Deserialize;
@@ -21,6 +23,7 @@ pub struct Release {
     pub tag: String,
     pub page: String,
     pub asset: Option<Asset>,
+    pub exe: Option<Asset>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -75,15 +78,25 @@ pub fn running_version() -> &'static str {
     env!("CARGO_PKG_VERSION")
 }
 
-fn helper_asset(assets: Vec<ApiAsset>) -> Option<Asset> {
+fn helper_asset(assets: &[ApiAsset]) -> Option<Asset> {
     assets
-        .into_iter()
+        .iter()
         .find(|a| {
             let n = a.name.to_ascii_lowercase();
             n.starts_with("trhmu") && n.ends_with(".zip")
         })
-        .map(|a| Asset { name: a.name, url: a.browser_download_url, size: a.size })
+        .map(pick)
 }
+
+fn exe_asset(assets: &[ApiAsset]) -> Option<Asset> {
+    assets.iter().find(|a| a.name.eq_ignore_ascii_case(EXE_NAME)).map(pick)
+}
+
+fn pick(a: &ApiAsset) -> Asset {
+    Asset { name: a.name.clone(), url: a.browser_download_url.clone(), size: a.size }
+}
+
+pub const EXE_NAME: &str = "trhmu.exe";
 
 pub fn parse_latest(body: &str) -> Result<Option<Release>, UpdateError> {
     let r: ApiRelease = serde_json::from_str(body).map_err(|e| UpdateError::Shape(e.to_string()))?;
@@ -93,7 +106,8 @@ pub fn parse_latest(body: &str) -> Result<Option<Release>, UpdateError> {
     Ok(Some(Release {
         tag: r.tag_name,
         page: r.html_url,
-        asset: helper_asset(r.assets),
+        asset: helper_asset(&r.assets),
+        exe: exe_asset(&r.assets),
     }))
 }
 
@@ -114,6 +128,45 @@ pub fn latest() -> Result<Option<Release>, UpdateError> {
         Err(ureq::Error::Status(404, _)) => Ok(None),
         Err(e) => Err(UpdateError::Http(e.to_string())),
     }
+}
+
+pub fn download_exe(url: &str, dest: &Path, expected: u64) -> Result<(), UpdateError> {
+    const SANE_MAX: u64 = 64 * 1024 * 1024;
+    if expected == 0 || expected > SANE_MAX {
+        return Err(UpdateError::Shape(format!("refusing a {expected} byte download")));
+    }
+    let resp = ureq::builder()
+        .timeout(Duration::from_secs(120))
+        .build()
+        .get(url)
+        .set("User-Agent", USER_AGENT)
+        .call()
+        .map_err(|e| UpdateError::Http(e.to_string()))?;
+
+    let mut bytes = Vec::with_capacity(expected as usize);
+    resp.into_reader()
+        .take(SANE_MAX + 1)
+        .read_to_end(&mut bytes)
+        .map_err(|e| UpdateError::Http(e.to_string()))?;
+
+    check_exe(&bytes, expected)?;
+    std::fs::write(dest, &bytes).map_err(|e| UpdateError::Http(e.to_string()))?;
+    Ok(())
+}
+
+pub fn check_exe(bytes: &[u8], expected: u64) -> Result<(), UpdateError> {
+    if bytes.len() as u64 != expected {
+        return Err(UpdateError::Shape(format!(
+            "expected {expected} bytes, got {}",
+            bytes.len()
+        )));
+    }
+    if bytes.first_chunk::<2>() != Some(b"MZ") {
+        return Err(UpdateError::Shape(
+            "not a Windows executable (no MZ header); a proxy or an error page, not the helper".into(),
+        ));
+    }
+    Ok(())
 }
 
 #[cfg(test)]
@@ -201,5 +254,59 @@ mod tests {
     #[test]
     fn this_build_knows_its_own_version() {
         assert!(parts(running_version()).is_some(), "Cargo's version must parse");
+    }
+
+    const WITH_EXE: &str = r#"{
+        "tag_name": "v1.0.2",
+        "html_url": "https://github.com/aarminani/mu-rating-hud/releases/tag/v1.0.2",
+        "draft": false,
+        "prerelease": false,
+        "assets": [
+            {"name": "trhmu-1.0.2.zip", "browser_download_url": "https://e.invalid/z", "size": 5},
+            {"name": "trhmu.exe", "browser_download_url": "https://e.invalid/exe", "size": 8456704},
+            {"name": "trhmu-dash.exe", "browser_download_url": "https://e.invalid/dash", "size": 9},
+            {"name": "trhmu-preview.exe", "browser_download_url": "https://e.invalid/prev", "size": 7}
+        ]
+    }"#;
+
+    #[test]
+    fn the_installable_exe_is_matched_by_exact_name() {
+        let r = parse_latest(WITH_EXE).unwrap().unwrap();
+        let exe = r.exe.expect("the loose exe");
+        assert_eq!(exe.name, "trhmu.exe", "never the dash or preview build");
+        assert_eq!(exe.size, 8_456_704);
+        assert_eq!(r.asset.unwrap().name, "trhmu-1.0.2.zip", "the zip is still found too");
+    }
+
+    #[test]
+    fn a_release_without_the_loose_exe_cannot_be_installed_in_place() {
+        let r = parse_latest(BODY).unwrap().unwrap();
+        assert!(r.exe.is_none());
+        assert!(r.asset.is_some());
+    }
+
+    #[test]
+    fn a_short_download_is_refused() {
+        let mut exe = b"MZ".to_vec();
+        exe.extend_from_slice(&[0u8; 98]);
+        assert!(check_exe(&exe, 100).is_ok(), "exact length and an MZ header");
+        assert!(check_exe(&exe, 101).is_err(), "one byte short is a truncated download");
+        assert!(check_exe(&exe, 99).is_err());
+    }
+
+    #[test]
+    fn an_error_page_is_not_installed_over_the_helper() {
+        let html = b"<!DOCTYPE html><html><body>Sign in to continue</body></html>".to_vec();
+        let err = check_exe(&html, html.len() as u64).unwrap_err();
+        assert!(err.to_string().contains("MZ"), "refused for the right reason: {err}");
+    }
+
+    #[test]
+    fn the_real_shipped_exe_passes_both_gates() {
+        let p = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../../release/trhmu-1.0.1/trhmu.exe");
+        if let Ok(bytes) = std::fs::read(&p) {
+            assert!(check_exe(&bytes, bytes.len() as u64).is_ok(), "the shipped exe must pass");
+        }
     }
 }

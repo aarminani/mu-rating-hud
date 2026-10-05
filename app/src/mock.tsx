@@ -252,12 +252,16 @@ function SettingsMock() {
 
 function UpdateMock() {
   const [left, setLeft] = useState<number | null>(null);
+  const [state, setState] = useState<"idle" | "busy" | "error">("idle");
   return (
     <SizeProvider size="compact">
       <div className="app" style={{ height: 520 }}>
         <div style={{ padding: 16 }}>
           <Button variant="tertiary" onClick={() => setLeft((n) => (n === null ? 10 : null))}>
             {left === null ? "Start the countdown" : "Back to waiting"}
+          </Button>{" "}
+          <Button variant="tertiary" onClick={() => setState((s) => (s === "idle" ? "busy" : s === "busy" ? "error" : "idle"))}>
+            state: {state}
           </Button>
         </div>
       </div>
@@ -266,13 +270,18 @@ function UpdateMock() {
           version: "v1.0.1",
           running: "1.0.0",
           page: "https://github.com/aarminani/mu-rating-hud/releases/tag/v1.0.1",
-          asset: "https://example.invalid/trhmu-1.0.1.zip",
-          size: 5_517_041,
+          asset: "https://example.invalid/trhmu-1.0.2.zip",
+          size: 5_526_450,
+          exe: "https://example.invalid/trhmu.exe",
+          exe_size: 8_456_704,
         }}
         left={left}
+        busy={state === "busy"}
+        error={state === "error" ? "could not move the current helper aside: Access is denied. (os error 5)" : null}
         onStay={() => {}}
         onLater={() => setLeft(null)}
-        onDownload={() => setLeft(null)}
+        onDownload={() => setState("busy")}
+        onOpenPage={() => setState("idle")}
       />
     </SizeProvider>
   );
